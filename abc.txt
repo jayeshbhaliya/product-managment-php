@@ -1,0 +1,174 @@
+// if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  
+//   $email = mysqli_real_escape_string($conn ,$_POST['email']);
+//   $password = mysqli_real_escape_string($conn ,$_POST['password']);
+// }
+
+// $sql = "SELECT email FROM users WHERE  email = '$email' AND password = '$password'";
+
+// if ($conn->query($sql) === TRUE) {
+//   echo "hello";
+//   $_SESSION['login_id'] = $email;
+//   // $result_password = $conn->query($sql2);
+//   // if ($result_password == $password) {
+//   //   echo $result_password;
+//   //   $_SESSION['login_id'] = $email;
+//   // }else{
+//   //   echo " password wrong";
+//   // }
+  
+ 
+// } else {
+//   echo "Error: " . $sql . "<br>" . $conn->error;
+// }
+
+
+<?php
+include("connection.php");
+session_start();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  
+  $category_title = $_POST['category_title'];
+  $description = $_POST['description'];
+  $short_no = $_POST['short_no'];
+  // $category_img = $_POST['category_img'];
+
+  $filename = $_FILES["category_img"]["name"];
+  $tempname = $_FILES["choosefile"]["tmp_name"];  
+  $folder = "image/".$filename;
+ 
+}
+
+$sql = "INSERT INTO categories ( category_title, description, short_no, category_img)
+VALUES ('$category_title', '$description', '$short_no', '$filename')";
+
+if ($conn->query($sql) === TRUE) {
+  
+  header("Location: category.php");
+  
+} else {
+  echo "Error: " . $sql . "<br>" . $conn->error;
+}
+if (move_uploaded_file($tempname, $folder)) {
+
+  $msg = "Image uploaded successfully";
+
+}else{
+
+  $msg = "Failed to upload image";
+
+}
+
+$conn->close();
+
+
+if(file_exists($filepath)) {
+					$filepath = $upload_dir.time().$file_name;
+					
+					if( move_uploaded_file($file_tmpname, $filepath)) {
+                        echo "{$file_name} successfully uploaded <br />";
+                        $sql2 = "INSERT INTO `images` (  `image_name`, `product_id`,) VALUe('$file_name', '$lastproductId' )";
+                        if ($conn->query($sql2) === TRUE) {
+                            echo "success";
+                        } 
+                        else {
+                            echo "Error: " . $sql2 . "<br>" . $conn->error;
+                        }
+                
+                           
+                    }
+                    else {					
+                        echo "Error uploading {$file_name} <br />";
+                    }
+					
+				}
+				else {
+				
+					if( move_uploaded_file($file_tmpname, $filepath)) {
+                        echo "{$file_name} successfully uploaded <br />";
+                        $sql2 = "INSERT INTO images ( 'image_name' , 'product_id') VALUES ('$file_name', '$lastproductId' )";
+                        if ($conn->query($sql2) === TRUE) {
+                            echo "success";
+                        } 
+                        else {
+                            echo "Error: " . $sql2 . "<br>" . $conn->error;
+                        }
+                
+                           
+                    }
+                    else {					
+                        echo "Error uploading {$file_name} <br />";
+                    }
+				}
+
+<?php
+include("connection.php");
+session_start();
+
+  if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  
+    $product_title = $_POST['product_title'];
+    $short_desc = $_POST['short_desc'];
+    $product_desc = $_POST['product_desc'];
+    $price = $_POST['price'];
+    $stock = $_POST['stock'];
+    $discount = $_POST['discount'];
+   
+   
+
+    $target_folder = "../product_managment/image/";
+    $file_basename = basename($_FILES["product_img"]["name"]);
+    $tempname = $_FILES["product_img"]["tmp_name"];
+    $upload_ok = 0;
+    $b_name=str_replace(' ', '-',$file_basename);
+    $target_file = $target_folder.$file_basename;
+    $file_type  = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+ 
+
+    if(isset($_POST["submit"])){
+      $check = getimagesize($tempname);
+      if($check !== false){
+          echo "File is an image - " . $check["mime"] . ".\n";
+          $upload_ok = 1;
+        }
+      else{
+          echo "File is not image.";
+          $upload_ok = 0;
+      }
+    }
+
+
+    if ($upload_ok == 0) {
+      echo "Sorry, your file was not uploaded.";
+    } 
+    else {
+      if (move_uploaded_file($tempname, $target_file)) {
+        echo "The file ". htmlspecialchars($file_basename). " has been uploaded.";
+
+        $sql = "INSERT INTO products ( `product_title`, `short_desc`, `long_desc`, `price`, `stock`, `discount`)
+            VALUES ('$product_title', '$short_desc' ,'$product_desc', '$price', '$stock' , '$discount')";
+
+        if ($conn->query($sql) === TRUE) {
+         
+          header("Location: product.php");
+        
+        } 
+        else {
+          echo "Error: " . $sql . "<br>" . $conn->error;
+        }
+      } else {
+        echo "Sorry, there was an error uploading your file.";
+      }
+    }
+
+    
+
+    
+
+    $conn->close();
+
+}
+
+?>
+
